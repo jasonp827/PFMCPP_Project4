@@ -141,7 +141,7 @@ int IntType::divide(int lhs, int rhs)
     if(rhs == 0)
     {
         std::cout << "Warning! You are about to divide by int 0. Cancelling operation by returning 0." << "\n";
-        return 0;
+        return lhs;
     }
     return lhs / rhs;
 }

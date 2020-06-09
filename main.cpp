@@ -60,25 +60,25 @@ struct FloatType
     float divide( float lhs, float rhs );
 };
 
-float FloatType::add(float lhs, float rhs)
+float FloatType::add( float lhs, float rhs )
 {
     return lhs + rhs;
 }
 
-float FloatType::subtract(float lhs, float rhs)
+float FloatType::subtract( float lhs, float rhs )
 {
     return lhs - rhs;
 }
 
-float FloatType:: multiply(float lhs, float rhs)
+float FloatType:: multiply( float lhs, float rhs )
 {
     return lhs * rhs;
 }
-float FloatType::divide(float lhs, float rhs)
+float FloatType::divide( float lhs, float rhs )
 {
     if(rhs == 0.0f)
     {
-        std::cout << "Warning! You are about to divide by float 0" << "\n";
+        std::cout << "\nwarning, floating point division by zero returns 'inf' !" << "\n";
     }
     return lhs / rhs;
 }
@@ -91,25 +91,25 @@ struct DoubleType
     double divide( double lhs, double rhs );
 };
 
-double DoubleType::add(double lhs, double rhs)
+double DoubleType::add( double lhs, double rhs )
 {
     return lhs + rhs;
 }
 
-double DoubleType::subtract(double lhs, double rhs)
+double DoubleType::subtract( double lhs, double rhs )
 {
     return lhs - rhs;
 }
 
-double DoubleType:: multiply(double lhs, double rhs)
+double DoubleType:: multiply( double lhs, double rhs )
 {
     return lhs * rhs;
 }
-double DoubleType::divide(double lhs, double rhs)
+double DoubleType::divide( double lhs, double rhs )
 {
     if(rhs == 0.0)
     {
-        std::cout << "Warning! You are about to divide by double 0" << "\n";
+        std::cout << "\nwarning, floating point division by zero returns 'inf' !" << "\n";
     }
     return lhs / rhs;
 }
@@ -122,25 +122,25 @@ struct IntType
     int divide( int lhs, int rhs );
 };
 
-int IntType::add(int lhs, int rhs)
+int IntType::add( int lhs, int rhs )
 {
     return lhs + rhs;
 }
 
-int IntType::subtract(int lhs, int rhs)
+int IntType::subtract( int lhs, int rhs )
 {
     return lhs - rhs;
 }
 
-int IntType:: multiply(int lhs, int rhs)
+int IntType:: multiply( int lhs, int rhs )
 {
     return lhs * rhs;
 }
-int IntType::divide(int lhs, int rhs)
+int IntType::divide( int lhs, int rhs )
 {
     if(rhs == 0)
     {
-        std::cout << "Warning! You are about to divide by int 0. Cancelling operation by returning 0." << "\n";
+        std::cout << "error, integer division by zero will crash the program!\nreturning lhs" << "\n";
         return lhs;
     }
     return lhs / rhs;

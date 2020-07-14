@@ -220,7 +220,7 @@ FloatType& FloatType::divide( float value )
 {
     if(value == 0.0f)
     {
-        std::cout << "\nwarning, floating point division by zero returns 'inf' !" << "\n";
+        std::cout << "\nwarning, floating point division by zero!" << "\n";
     }
     *floatPtr /= value;
     return *this;
@@ -309,7 +309,7 @@ DoubleType& DoubleType::divide( double value)
 {
     if(value == 0.0)
     {
-        std::cout << "\nwarning, floating point division by zero returns 'inf' !" << "\n";
+        std::cout << "\nwarning, floating point division by zero!" << "\n";
     }
     *doublePtr /= value;
     return *this;

@@ -93,7 +93,7 @@ New value of dt = dt / 0 = warning: floating point division by zero!
 inf
 ---------------------
 
-The result of FloatType^4 divided by IntType is: 26.9136
+The result of FloatType^3 divided by IntType is: 26.9136
 The result of DoubleType times 3 plus IntType is : 67.3
 The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: 711
 An operation followed by attempts to divide by 0, which are ignored and warns user: 
@@ -104,6 +104,9 @@ error: integer division by zero is an error and will crash the program!
 FloatType x IntType  =  13143546
 (IntType + DoubleType + FloatType) x 24 = 315447336
 good to go!
+
+
+
 
 */
 

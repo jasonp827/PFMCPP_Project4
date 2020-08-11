@@ -272,7 +272,7 @@ struct Point
         return multiply(static_cast<float>(m));
     }
 
-    void toString(){std::cout << x << ", " << y << "\n";}
+    void toString(){std::cout << "Point { x: " << x << ", y: " << y <<  " }\n";}
     
 private:
     float x{0}, y{0};
@@ -442,7 +442,7 @@ IntType& IntType::pow( const DoubleType& dt )
 
 IntType& IntType::powInternal( int value )
 {
-    *intPtr = std::pow(*intPtr, value);
+    *intPtr = static_cast<int>(std::pow(*intPtr, value));
     return *this;
 }
 /*
@@ -466,7 +466,7 @@ IntType& IntType::powInternal( int value )
     IntType it ( 34 );
     DoubleType pi( 3.14 );
 
-    std::cout << "The result of FloatType^4 divided by IntType is: " << ft.multiply( static_cast<float>(ft) ).multiply( static_cast<float>(ft) ).divide( static_cast<float>(it) ) << std::endl;
+    std::cout << "The result of FloatType^3 divided by IntType is: " << ft.multiply( static_cast<float>(ft) ).multiply( static_cast<float>(ft) ).divide( static_cast<float>(it) ) << std::endl;
     std::cout << "The result of DoubleType times 3 plus IntType is : " << dt.multiply( static_cast<double>(3) ).add( static_cast<double>(it) ) << std::endl;
     std::cout << "The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: " << it.divide( static_cast<int>(pi) ).multiply( static_cast<int>(dt) ).subtract( static_cast<int>(ft) ) << std::endl;
     std::cout << "An operation followed by attempts to divide by 0, which are ignored and warns user: " << std::endl;

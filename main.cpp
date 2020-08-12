@@ -27,30 +27,6 @@ Do not delete your previous main.
  5) delete the example below after it makes sense how your code will change due to 1).
  */
 
-namespace Example
-{
-    int main()
-    {
-        FloatType floatNum(4.3f);
-        IntType intNum(2);
-        IntType intNum2(6);
-
-        /* 
-        if you previously had a line like this demonstrating chaining:
-            
-            intNum.add(3).add(4.5f).divide(floatNum); 
-
-        it should become:
-        */
-        intNum += 3;
-        intNum += 4.5f;
-        intNum /= floatNum;
-        std::cout << "intNum: " << intNum << std::endl;
-        
-        return 0;
-    }
-}
-
  /*
  6) compile/link/run to make sure you don't have any errors or warnings.
 
@@ -190,10 +166,10 @@ struct FloatType
 
     operator float() const {return *floatPtr;}
 
-    FloatType& add( float value );
-    FloatType& subtract( float value );
-    FloatType& multiply( float value );
-    FloatType& divide( float value );
+    FloatType& operator+=( float value );
+    FloatType& operator-=( float value );
+    FloatType& operator*=( float value );
+    FloatType& operator/=( float value );
 
     FloatType& pow( float value );
     FloatType& pow( const IntType& it );
@@ -215,10 +191,10 @@ struct DoubleType
     }
     operator double() const {return *doublePtr;}
 
-    DoubleType& add( double value );
-    DoubleType& subtract( double value );
-    DoubleType& multiply( double value );
-    DoubleType& divide( double value );
+    DoubleType& operator+=( double value );
+    DoubleType& operator-=( double value );
+    DoubleType& operator*=( double value );
+    DoubleType& operator/=( double value );
 
     DoubleType& pow( double value );
     DoubleType& pow( const IntType& it );
@@ -241,10 +217,10 @@ struct IntType
 
     operator int() const{return *intPtr;}
 
-    IntType& add( int value );
-    IntType& subtract( int value );
-    IntType& multiply( int value );
-    IntType& divide( int value );
+    IntType& operator+=( int value );
+    IntType& operator-=( int value );
+    IntType& operator*=( int value );
+    IntType& operator/=( int value );
 
     IntType& pow( int value );
     IntType& pow( const IntType& it );
@@ -262,24 +238,22 @@ struct Point
     Point(const FloatType& x_, const FloatType& y_) : x(static_cast<float>(x_)), y(static_cast<float>(y_)){}
     Point(const DoubleType& x_, const DoubleType& y_) : x(static_cast<float>(x_)), y(static_cast<float>(y_)){}
 
+  
     Point& multiply(float m)
     {
         x *= m;
         y *= m;
         return *this;
     }
-
-    Point& multiply( IntType& m )
+    Point& multiply(const FloatType& m)
     {
         return multiply(static_cast<float>(m));
     }
-    
-    Point& multiply( FloatType& m )
+    Point& multiply(const DoubleType& m)
     {
         return multiply(static_cast<float>(m));
     }
-    
-    Point& multiply( DoubleType& m )
+    Point& multiply(const IntType& m)
     {
         return multiply(static_cast<float>(m));
     }
@@ -292,24 +266,24 @@ private:
 
 //====================================================
 
-FloatType& FloatType::add( float value )
+FloatType& FloatType::operator+=( float value )
 {
     *floatPtr += value;
     return *this;
 }
 
-FloatType& FloatType::subtract( float value)
+FloatType& FloatType::operator-=( float value)
 {
     *floatPtr -= value;
     return *this;
 }
 
-FloatType& FloatType::multiply( float value )
+FloatType& FloatType::operator*=( float value )
 {
     *floatPtr *= value;
     return *this;
 }
-FloatType& FloatType::divide( float value )
+FloatType& FloatType::operator/=( float value )
 {
     if(value == 0.0f)
     {
@@ -347,25 +321,25 @@ FloatType& FloatType::powInternal( float value )
 
 //============================================================
 
-DoubleType& DoubleType::add( double value )
+DoubleType& DoubleType::operator+=( double value )
 {
     *doublePtr += value;
     return *this;
 }
 
-DoubleType& DoubleType::subtract( double value )
+DoubleType& DoubleType::operator-=( double value )
 {
     *doublePtr -= value;
     return *this;
 }
 
-DoubleType& DoubleType:: multiply( double value )
+DoubleType& DoubleType::operator*=( double value )
 {
     *doublePtr *= value;
     return*this;
 }
 
-DoubleType& DoubleType::divide( double value)
+DoubleType& DoubleType::operator/=( double value)
 {
     if(value == 0.0)
     {
@@ -403,25 +377,25 @@ DoubleType& DoubleType::powInternal( double value )
 
 //========================================================
 
-IntType& IntType::add( int value )
+IntType& IntType::operator+=( int value )
 {
     *intPtr += value;
     return *this;
 }
 
-IntType& IntType::subtract( int value )
+IntType& IntType::operator-=( int value )
 {
     *intPtr -= value;
     return *this;
 }
 
-IntType& IntType::multiply( int value )
+IntType& IntType::operator*=( int value )
 {
     *intPtr *= value;
     return *this;
 }
 
-IntType& IntType::divide( int value )
+IntType& IntType::operator/=( int value )
 {
     if(value == 0)
     {
@@ -478,14 +452,34 @@ IntType& IntType::powInternal( int value )
     IntType it ( 34 );
     DoubleType pi( 3.14 );
 
-    std::cout << "The result of FloatType^3 divided by IntType is: " << ft.multiply( static_cast<float>(ft) ).multiply( static_cast<float>(ft) ).divide( static_cast<float>(it) ) << std::endl;
-    std::cout << "The result of DoubleType times 3 plus IntType is : " << dt.multiply( static_cast<double>(3) ).add( static_cast<double>(it) ) << std::endl;
-    std::cout << "The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: " << it.divide( static_cast<int>(pi) ).multiply( static_cast<int>(dt) ).subtract( static_cast<int>(ft) ) << std::endl;
+    ft*=ft;
+    ft*=ft;
+    ft/=it;
+    std::cout << "The result of FloatType^3 divided by IntType is: " << ft << std::endl;
+
+    dt*=3;
+    dt+=it;
+    std::cout << "The result of DoubleType times 3 plus IntType is : " << dt << std::endl;
+
+    it/=static_cast<int>(pi);
+    it*=static_cast<int>(dt);
+    it-=static_cast<int>(ft);
+    std::cout << "The result of IntType divided by 3.14 multiplied by DoubleType minus FloatType is: " << it << std::endl;
     std::cout << "An operation followed by attempts to divide by 0, which are ignored and warns user: " << std::endl;
-    std::cout << it.multiply(static_cast<int>(it)).divide(static_cast<int>(0)).divide(static_cast<int>(0.0f)).divide(0.0) << std::endl;
+
+    it*=it;
+    it/=0;
+    it/=0.0f;
+    it/=0.0;
+    std::cout << it << std::endl;
     
-    std::cout << "FloatType x IntType  =  " << it.multiply( static_cast<int>(ft) ) << std::endl;
-    std::cout << "(IntType + DoubleType + FloatType) x 24 = " << it.add( static_cast<int>(dt) ).add( static_cast<int>(ft) ).multiply( static_cast<int>(24) ) << std::endl;
+    it*=static_cast<int>(ft);
+    std::cout << "FloatType x IntType  =  " << it << std::endl;
+
+    it+=static_cast<int>(dt);
+    it+=static_cast<int>(ft);
+    it*=24;
+    std::cout << "(IntType + DoubleType + FloatType) x 24 = " << it << std::endl;
 }
 
 void part4()
@@ -581,26 +575,42 @@ int main()
     FloatType ft ( 2.0f );
     DoubleType dt ( 2 );
     IntType it ( 2 ) ;
+    
+    ft+=2.0f;
+    std::cout << "FloatType add result=" << ft << std::endl;
+    ft-=2.0f;
+    std::cout << "FloatType subtract result=" << ft << std::endl;
+    ft*=2.0f;
+    std::cout << "FloatType multiply result=" << ft << std::endl;
+    ft/=16.0f;
+    std::cout << "FloatType divide result=" << ft << std::endl << std::endl;
 
-    std::cout << "FloatType add result=" << ft.add( 2.0f ) << std::endl;
-    std::cout << "FloatType subtract result=" << ft.subtract( 2.0f ) << std::endl;
-    std::cout << "FloatType multiply result=" << ft.multiply( 2.0f )<< std::endl;
-    std::cout << "FloatType divide result=" << ft.divide( 16.0f) << std::endl << std::endl;
+    dt+=2.0;
+    std::cout << "DoubleType add result=" << dt << std::endl;
+    dt-=2.0;
+    std::cout << "DoubleType subtract result=" << dt << std::endl;
+    dt*=2.0;
+    std::cout << "DoubleType multiply result=" << dt << std::endl;
+    dt/=(static_cast<double>(5.0f));
+    std::cout << "DoubleType divide result=" << dt << std::endl << std::endl;
 
-    std::cout << "DoubleType add result=" << dt.add(2.0) << std::endl;
-    std::cout << "DoubleType subtract result=" << dt.subtract(2.0) << std::endl;
-    std::cout << "DoubleType multiply result=" << dt.multiply(2.0) << std::endl;
-    std::cout << "DoubleType divide result=" << dt.divide(static_cast<double>(5.0f)) << std::endl << std::endl;
+    std::cout << "IntType add result=" << (it+=2) << std::endl;
+    std::cout << "IntType subtract result=" << (it-=2) << std::endl;
+    std::cout << "IntType multiply result=" << (it*=2) << std::endl;
+    std::cout << "IntType divide result=" << (it/=3) << std::endl << std::endl;
 
-    std::cout << "IntType add result=" << it.add(2) << std::endl;
-    std::cout << "IntType subtract result=" << it.subtract(2) << std::endl;
-    std::cout << "IntType multiply result=" << it.multiply(2) << std::endl;
-    std::cout << "IntType divide result=" << it.divide(3) << std::endl << std::endl;
-    std::cout << "Chain calculation = " << it.multiply(1000).divide(2).subtract(10).add(100) << std::endl;
+    it*=1000;
+    it/=(2);
+    it-=10;
+    it+=(100);
+    std::cout << "Chain calculation = " << it << std::endl;
 
         // FloatType object instanciation and method tests
     // --------
-    std::cout << "New value of ft = (ft + 3.0f) * 1.5f / 5.0f = " << ft.add( 3.0f ).multiply(1.5f).divide(5.0f) << std::endl;
+    ft+=3.0f;
+    ft*=(1.5f);
+    ft/=(5.0f);
+    std::cout << "New value of ft = (ft + 3.0f) * 1.5f / 5.0f = " << ft << std::endl;
        
     std::cout << "---------------------\n" << std::endl; 
     
@@ -610,16 +620,20 @@ int main()
     std::cout << "Initial value of it: " << it << std::endl;
     // --------
     std::cout << "Use of function concatenation (mixed type arguments) " << std::endl;
-    std::cout << "New value of dt = (dt * it) / 5.0f + ft = " << (dt.multiply(static_cast<double>(it)).divide(static_cast<double>(5.0f)).add(static_cast<double>(ft))) << std::endl;
+
+    dt*=it;
+    dt/=static_cast<double>(5.0f);
+    dt+=static_cast<double>(ft);
+    std::cout << "New value of dt = (dt * it) / 5.0f + ft = " << dt << std::endl;
 
     std::cout << "---------------------\n" << std::endl; 
     
     // Intercept division by 0
     // --------
     std::cout << "Intercept division by 0 " << std::endl;
-    std::cout << "New value of it = it / 0 = " << it.divide(static_cast<int>(0)) << std::endl;
-    std::cout << "New value of ft = ft / 0 = " << ft.divide(static_cast<float>(0)) << std::endl;
-    std::cout << "New value of dt = dt / 0 = " << dt.divide(static_cast<double>(0)) << std::endl;
+    std::cout << "New value of it = it / 0 = " << (it/=0) << std::endl;
+    std::cout << "New value of ft = ft / 0 = " << (ft/=0) << std::endl;
+    std::cout << "New value of dt = dt / 0 = " << (dt/=0) << std::endl;
 
     std::cout << "---------------------\n" << std::endl; 
     part3();

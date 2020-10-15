@@ -226,7 +226,6 @@ struct HeapA
 
 
 template <typename NumericType>
-
 struct Numeric
 {
     using Type = NumericType;
@@ -281,6 +280,7 @@ struct Numeric
         }
         return *this;
     }
+    
     Numeric& apply( void(*func)(Type&) )
     {
         if (func)
@@ -299,13 +299,94 @@ private:
         return *this;
     }  
 };
+/*
+#6) add an explicit template specialization for 'double' of your wrapper class
+        this template specialization will have one apply() function instead of 2. 
+        #7) this apply() function will be templated, and expect a Callable object, not std::function<>. 
+        the function should allow for chaining.  
+        the callable object should return void, like the function pointer-based apply() function in the primary class template*/
+template<>
+struct Numeric<double>
+{
+    Numeric(double num):numberPtr(std::make_unique<double>(num)){}
+    ~Numeric()
+    {
+        numberPtr = nullptr;
+    }
+
+    operator double() const {return *numberPtr;}
+
+    Numeric& operator +=( double value )
+    {
+        *numberPtr += value;
+        return *this;
+    }
+    
+    Numeric& operator -=( double value )
+    {
+        *numberPtr -= value;
+        return *this;
+    }
+
+    Numeric& operator *=( double value )
+    {
+        *numberPtr *= value;
+        return *this;
+    }
+
+    Numeric& operator /=( double value )
+    {
+        if(value == 0.0f)
+        {
+            std::cout << "warning: floating point division by zero!" << "\n";
+        }
+        *numberPtr /= value;
+        return *this;
+    }
+    
+    Numeric& pow( double value )
+    {
+        return powInternal( value );
+    }
+    
+    template<typename Callable>
+    Numeric& apply( void(*func)(Callable& callable) )
+    {
+        if (func)
+        {
+            func(*numberPtr);
+        }
+        return *this;
+    }
+
+
+private:
+    std::unique_ptr<double> numberPtr;
+    Numeric& powInternal( double value )
+    {
+        *numberPtr = std::pow(*numberPtr, value);
+        return *this;
+    }  
+};
 
 //================================================
+/*
+#5) template your free function for the apply() that takes a function pointer so it can be used with your Wrapper class's apply() function
+*/
+
 template<typename Type>
-void myFloatFreeFunct(Type& numberPtr)
+void myNumericFreeFunct(Type& numberPtr)
 {
     numberPtr += 7.0f;
 }
+
+template<>
+void myNumericFreeFunct<double>(double& numberPtr)
+{
+    numberPtr += 6.0;
+}
+
+//===========================================
 
 template<typename Typex, typename Typey>
 struct Point
@@ -427,9 +508,9 @@ void part4()
     // ------------------------------------------------------------
     //                          Point tests
     // ------------------------------------------------------------
-    Numeric ft2(3.0f);
-    Numeric dt2(4.0);
-    Numeric it2(5);
+    Numeric<float> ft2(3.0f);
+    Numeric<double> dt2(4.0);
+    Numeric<int> it2(5);
     float floatMul = 6.0f;
 
     // Point tests with float
@@ -531,10 +612,10 @@ void part7()
     std::cout << "ft3 before: " << ft3 << std::endl;
 
     {
-        using Type = decltype( ft3 );
-        ft3.apply( [&ft3](std::unique_ptr<Numeric::Type>& type) -> Numeric&
+        using NumericType = decltype( ft3 );
+        ft3.apply( [&ft3](std::unique_ptr<NumericType::Type>& type) -> NumericType&
         { 
-            type += 7.0f;
+            *type += 7.0f;
             return ft3;
         } );
     }
@@ -550,10 +631,10 @@ void part7()
     std::cout << "dt3 before: " << dt3 << std::endl;
 
     {
-        using Type = decltype( dt3 );
-        dt3.apply( [&dt3](std::unique_ptr<Numeric::Type>& type) -> Numeric&
+        using NumericType = decltype( dt3 );
+        dt3.apply( [&dt3](std::unique_ptr<NumericType::Type>& type) -> NumericType&
         { 
-            type += 6.0;
+            *type += 6.0;
             return dt3;
         } ); // This calls the templated apply fcn
     }
@@ -561,20 +642,21 @@ void part7()
     std::cout << "dt3 after: " << dt3 << std::endl;
     std::cout << "Calling Numeric<double>::apply() twice using a free function (adds 7.0) and void as return type:" << std::endl;
     std::cout << "dt3 before: " << dt3 << std::endl;
-    dt3.apply(myNumericFreeFunct<double>).apply(myNumericFreeFunct<double>); // This calls the templated apply fcn
+    dt3.apply(myNumericFreeFunct<double>).apply(myNumericFreeFunct<double>)
+    ; // This calls the templated apply fcn
     std::cout << "dt3 after: " << dt3 << std::endl;
     std::cout << "---------------------\n" << std::endl;
 
     std::cout << "Calling Numeric<int>::apply() using a lambda (adds 5) and Numeric<int> as return type:" << std::endl;
     std::cout << "it3 before: " << it3 << std::endl;
 
-       {
-        using Type = decltype( it3 );
-        it3.apply( [&it3](std::unique_ptr<Numeric::Type>& type) -> Numeric&
+    {
+        using NumericType = decltype( it3 );
+        it3.apply( [&it3](std::unique_ptr<NumericType::Type>& type) -> NumericType&
         { 
-            type += 6.0;
+            *type += 5;
             return it3;
-        } ); // This calls the templated apply fcn
+        } ); 
     }
     std::cout << "it3 after: " << it3 << std::endl;
     std::cout << "Calling Numeric<int>::apply() twice using a free function (adds 7) and void as return type:" << std::endl;

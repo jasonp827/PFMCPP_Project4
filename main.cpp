@@ -230,7 +230,8 @@ struct Numeric
 {
     using Type = NumericType;
 
-    Numeric(Type num):numberPtr(std::make_unique<Type>(num)){}
+    Numeric(Type num) : numberPtr(std::make_unique<Type>(num)){}
+
     ~Numeric()
     {
         numberPtr = nullptr;
@@ -238,26 +239,26 @@ struct Numeric
 
     operator Type() const {return *numberPtr;}
 
-    Numeric& operator +=( Type value )
+    Numeric& operator += ( Type value )
     {
         *numberPtr += value;
         return *this;
     }
     
-    Numeric& operator -=( Type value )
+    Numeric& operator -= ( Type value )
     {
         *numberPtr -= value;
         return *this;
     }
 
-    Numeric& operator *=( Type value )
+    Numeric& operator *= ( Type value )
     {
         *numberPtr *= value;
         return *this;
     }
 
     template<typename ParType>
-    Numeric& operator /=( ParType value )
+    Numeric& operator /= ( ParType value )
     {
         if constexpr (std::is_same<Type, int>::value)
         {
@@ -275,7 +276,7 @@ struct Numeric
                 return *this;
             }
         }
-        else if (value < std::numeric_limits<ParType>::epsilon())
+        else if (value < std::numeric_limits<Type>::epsilon())
         {
             std::cout << "warning: floating point division by zero!" << std::endl;
         }
@@ -322,7 +323,8 @@ struct Numeric<double>
 {
     using Type = double;
 
-    Numeric(Type num):numberPtr(new Type(num)){}
+    Numeric(Type num) : numberPtr(new Type(num)){}
+
     ~Numeric()
     {
         numberPtr = nullptr;
@@ -330,25 +332,25 @@ struct Numeric<double>
 
     operator Type() const {return *numberPtr;}
 
-    Numeric& operator +=( Type value )
+    Numeric& operator += ( Type value )
     {
         *numberPtr += value;
         return *this;
     }
     
-    Numeric& operator -=( Type value )
+    Numeric& operator -= ( Type value )
     {
         *numberPtr -= value;
         return *this;
     }
 
-    Numeric& operator *=( Type value )
+    Numeric& operator *= ( Type value )
     {
         *numberPtr *= value;
         return *this;
     }
 
-    Numeric& operator /=( Type value )
+    Numeric& operator /= ( Type value )
     {
         if(value == 0.0)
         {
@@ -390,7 +392,6 @@ void myNumericFreeFunct(std::unique_ptr<NumericType>& numberPtr)
 {
     *numberPtr +=7;
 }
-
 
 //===========================================
 

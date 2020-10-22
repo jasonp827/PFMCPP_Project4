@@ -185,6 +185,7 @@ struct Numeric
     template<typename ParType>
     Numeric& operator /= ( const ParType& value )
     {
+        //if your template type is an int
         if constexpr (std::is_same<Type, int>::value)
         {
             if constexpr (std::is_same<ParType, int>::value)
@@ -201,7 +202,8 @@ struct Numeric
                 return *this;
             }
         }
-        else if (value < std::numeric_limits<ParType>::epsilon())
+        //else if it's less than epsilon
+        else if (value < std::numeric_limits<ParType>::epsilon()) FIXME: "it's" is referring to the template type of the class, not the function.
         {
             std::cout << "warning: floating point division by zero!" << std::endl;
         }

@@ -96,7 +96,7 @@ struct Temporary
     ~Temporary() = default;  
 
 //Rule of 5
-    Temporary(Temporary&& other) : v(std::move(other.v)){}
+    Temporary(Temporary&& other) : v( std::move(other.v) ){}
 
     Temporary& operator=(Temporary&& other)
     {
@@ -149,7 +149,7 @@ struct Numeric
         return *this; 
     }
 
-    ~Numeric() = default;
+    ~Numeric(){numberPtr = nullptr;}
 
 //Rule of 5
 

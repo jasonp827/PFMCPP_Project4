@@ -128,16 +128,7 @@ struct Numeric
     
     using Type = Temporary<NumericType>;
 
-    Numeric(Type num) : numberPtr(std::make_unique<Type>(num)){}
-
     Numeric(NumericType num) : numberPtr(std::make_unique<Type>(num)){}
-
-    template<typename OtherType>
-    Numeric& operator= (const OtherType& o)
-    {
-        *numberPtr = static_cast<NumericType>(o); 
-        return *this; 
-    }
 
     ~Numeric()
     {
@@ -319,7 +310,7 @@ int main()
     Numeric<float> floatNum(4.3f);
     Numeric<int> intNum(2);
     Numeric<int> intNum2(6);
-    intNum = 2 + (intNum2 - 4) + static_cast<double>(floatNum) / 2.3;
+    intNum = static_cast<int>( static_cast<double>(2 + (intNum2 - 4)) + static_cast<double>(floatNum) / 2.3 );
     std::cout << "intNum: " << intNum << std::endl;
     
     {

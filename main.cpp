@@ -84,18 +84,9 @@ struct Temporary
         std::cout << "I'm a Temporary<" << typeid(v).name() << "> object, #"
                   << counter++ << std::endl;
     }
-//Rule of 3
-    //Temporary(const Temporary& other) : v(other.v){}
-
-    // Temporary& operator= (const Temporary& other)
-    // {
-    //     v = other.v;
-    //     return *this;
-    // }
 
     ~Temporary() = default;  
 
-//Rule of 5
     Temporary(Temporary&& other) : v( std::move(other.v) ){}
 
     Temporary& operator=(Temporary&& other)
@@ -139,7 +130,6 @@ struct Numeric
 
     Numeric(Type num) : numberPtr(std::make_unique<Type>(num)){}
 
-//Rule of 3
     Numeric(NumericType num) : numberPtr(std::make_unique<Type>(num)){}
 
     template<typename OtherType>
@@ -149,9 +139,10 @@ struct Numeric
         return *this; 
     }
 
-    ~Numeric(){numberPtr = nullptr;}
-
-//Rule of 5
+    ~Numeric()
+    {
+        numberPtr = nullptr;
+    }
 
     Numeric(Numeric&& other) : numberPtr(std::move(other.numberPtr)){}
 

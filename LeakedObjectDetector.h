@@ -12,6 +12,7 @@ namespace juce
     public:
         //==============================================================================
         LeakedObjectDetector() noexcept                                 { ++(getCounter().numObjects); }
+        
         LeakedObjectDetector (const LeakedObjectDetector&) noexcept     { ++(getCounter().numObjects); }
         
         ~LeakedObjectDetector()

@@ -71,6 +71,11 @@ Use a service like https://www.diffchecker.com/diff to compare your output.
 
 #include<iostream>
 #include <typeinfo>
+#include <cmath>
+#include <functional>
+#include <memory>
+#include "LeakedObjectDetector.h"
+
 template<typename NumericType>
 struct Temporary
 {
@@ -79,12 +84,25 @@ struct Temporary
         std::cout << "I'm a Temporary<" << typeid(v).name() << "> object, #"
                   << counter++ << std::endl;
     }
-    
+
+    ~Temporary() = default;  
+
+    Temporary(Temporary&& other) : v( std::move(other.v) ){}
+
+    Temporary& operator=(Temporary&& other)
+    {
+        v = std::move(other.v);
+        return *this;
+    }
+
     operator NumericType() const { return v; }
     operator NumericType&() { return v; }
+
 private:
     static int counter;
     NumericType v;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Temporary)
 };
 
 template<typename NumericType>
@@ -103,22 +121,26 @@ struct HeapA
     }
 };
 
-#include <iostream>
-#include <cmath>
-#include <functional>
-#include <memory>
-
 
 template <typename NumericType>
 struct Numeric
 {
+    
     using Type = Temporary<NumericType>;
 
-    Numeric(Type num) : numberPtr(std::make_unique<Type>(num)){}
+    Numeric(NumericType num) : numberPtr(std::make_unique<Type>(num)){}
 
     ~Numeric()
     {
         numberPtr = nullptr;
+    }
+
+    Numeric(Numeric&& other) : numberPtr(std::move(other.numberPtr)){}
+
+    Numeric& operator= (Numeric&& other)
+    {
+        numberPtr = std::move(other.numberPtr);
+        return *this;
     }
 
     operator NumericType() const {return *numberPtr;}
@@ -172,13 +194,6 @@ struct Numeric
         return *this;
     }
 
-    template<typename OtherType>
-    Numeric& operator= (const OtherType& o)
-    {
-        *numberPtr = static_cast<NumericType>(o); 
-        return *this; 
-    } 
-    
     operator Type&() const {return *numberPtr;}
 
     template<typename OtherType>
@@ -197,6 +212,8 @@ struct Numeric
 
 private:
     std::unique_ptr<Type> numberPtr;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Numeric)
 };
 
 
@@ -293,7 +310,7 @@ int main()
     Numeric<float> floatNum(4.3f);
     Numeric<int> intNum(2);
     Numeric<int> intNum2(6);
-    intNum = 2 + (intNum2 - 4) + static_cast<double>(floatNum) / 2.3;
+    intNum = static_cast<int>( static_cast<double>(2 + (intNum2 - 4)) + static_cast<double>(floatNum) / 2.3 );
     std::cout << "intNum: " << intNum << std::endl;
     
     {
